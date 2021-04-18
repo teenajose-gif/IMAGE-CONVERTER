@@ -62,10 +62,10 @@ public class MainActivity extends AppCompatActivity {
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == RESULT_OK){
+             if (resultCode == RESULT_OK){
                 imageView.setImageURI(result.getUri());
-                Toast.makeText(this,"Image Update Successfully !!!"
-                ,Toast.LENGTH_SHORT).show();
+                 Toast.makeText(this,"Image Update Successfully !!!"
+                 ,Toast.LENGTH_SHORT).show();
             }
         }
     }
