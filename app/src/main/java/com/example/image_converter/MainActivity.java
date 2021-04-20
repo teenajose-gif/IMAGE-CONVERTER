@@ -17,10 +17,14 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageActivity;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     ImageButton btBrowse,btReset;
     ImageView imageView;
     Uri uri;
+    public static List<Uri> clickedImages = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +38,10 @@ public class MainActivity extends AppCompatActivity {
         btBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CropImage.startPickImageActivity(MainActivity.this);
+                CropImage.activity()
+                        .setGuidelines(CropImageView.Guidelines.ON)
+                        .start(MainActivity.this);
+//                CropImage.startPickImageActivity(MainActivity.this);
             }
         });
 
@@ -49,31 +56,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE
-                && resultCode == Activity.RESULT_OK) {
-            Uri imageuri = CropImage.getPickImageResultUri(this, data);
-            if (CropImage.isReadExternalStoragePermissionsRequired(this, imageuri)) {
-                uri = imageuri;
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}
-                        , 0);
-            } else {
-                startCrop(imageuri);
-            }
-        }
+//        if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE
+//                && resultCode == Activity.RESULT_OK) {
+//            Uri imageuri = CropImage.getPickImageResultUri(this, data);
+//            if (CropImage.isReadExternalStoragePermissionsRequired(this, imageuri)) {
+//                uri = imageuri;
+//                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}
+//                        , 0);
+//            } else {
+//                startCrop(imageuri);
+//            }
+//        }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
              if (resultCode == RESULT_OK){
-                imageView.setImageURI(result.getUri());
-                 Toast.makeText(this,"Image Update Successfully !!!"
-                 ,Toast.LENGTH_SHORT).show();
+                 Uri image = result.getUri();
+                 clickedImages.add(image);
+                 startActivity(new Intent(getApplicationContext(), grid.class));
+                 overridePendingTransition(0,0);
+//                imageView.setImageURI(image);
+//                 Toast.makeText(this,"Image Update Successfully !!!"
+//                 ,Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private void startCrop(Uri imageuri){
-        CropImage.activity(imageuri)
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .setMultiTouchEnabled(true)
-                .start(this);
-    }
+//    private void startCrop(Uri imageuri){
+//        CropImage.activity(imageuri)
+//                .setGuidelines(CropImageView.Guidelines.ON)
+//                .setMultiTouchEnabled(true)
+//                .start(this);
+//    }
 }
