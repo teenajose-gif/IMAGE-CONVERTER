@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Splash">
 
     <RelativeLayout
@@ -19,12 +20,16 @@
             android:layout_margin="35dp"
             android:src="@drawable/app_logo" />
 
-        <ImageView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/app_logo"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/app_label" />
+            android:fontFamily="@font/roboto_slab_bold"
+            android:text="PDF4ME"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="@color/app_primary_dark"
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 
 </RelativeLayout>

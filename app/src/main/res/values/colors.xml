@@ -8,5 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+
     <color name="app_primary">#A677B6</color>
+    <color name="app_primary_light">#A45ABE</color>
+    <color name="app_primary_dark">#6D2088</color>
 </resources>
