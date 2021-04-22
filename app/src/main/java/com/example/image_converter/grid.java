@@ -15,16 +15,27 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.io.File;
+import org.apache.commons.io.FileUtils;
+
+import com.pdf4me.client.ConvertClient;
+import com.pdf4me.client.Pdf4meClient;
+import com.pdf4me.client.MergeClient;
+
+import model.ConvertToPdf;
 
 public class grid extends AppCompatActivity {
     GridView gridView;
 
-
+    private final String token = "NTBiNDA1YjQtZDUwOS00MTI1LWJhYjMtMGZjMTM2MTcyMWRjOkNscWdTT1dudmRJUGw0eDhaWFlrJnpnUHNEMEVheWNn";
+    Pdf4meClient pdf4meClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
 
+
+        pdf4meClient = new Pdf4meClient("https://api.pdf4me.com", token);
         gridView = findViewById(R.id.grid_view);
         updateGridView();
 
@@ -46,6 +57,11 @@ public class grid extends AppCompatActivity {
 
     private void createPDF() {
         //todo save images to pdf
+        ConvertClient convertClient = new ConvertClient(pdf4meClient);
+
+        ConvertToPdf convertToPdf = new ConvertToPdf();
+
+
     }
 
     public class MainAdapter extends BaseAdapter {
