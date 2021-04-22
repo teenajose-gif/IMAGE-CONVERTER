@@ -38,6 +38,14 @@ public class grid extends AppCompatActivity {
         findViewById(R.id.add_more_btn).setOnClickListener(V -> {
             finish();
         });
+
+        findViewById(R.id.convert_btn).setOnClickListener(view -> {
+            createPDF();
+        });
+    }
+
+    private void createPDF() {
+        //todo save images to pdf
     }
 
     public class MainAdapter extends BaseAdapter {
