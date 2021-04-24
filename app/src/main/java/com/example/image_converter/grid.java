@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,11 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
+
 import org.apache.commons.io.FileUtils;
 
 import com.pdf4me.client.ConvertClient;
@@ -25,10 +29,13 @@ import com.pdf4me.client.MergeClient;
 import model.ConvertToPdf;
 
 public class grid extends AppCompatActivity {
+
+    private static final String TAG = "grid";
     GridView gridView;
 
-    private final String token = "NTBiNDA1YjQtZDUwOS00MTI1LWJhYjMtMGZjMTM2MTcyMWRjOkNscWdTT1dudmRJUGw0eDhaWFlrJnpnUHNEMEVheWNn";
+    private final String token = "NWM3OTAxNDEtODE2OC00OGM0LWIyMjMtNTQ2OWM5YTlkYjliOlFLZkQxOTQmSzExJW9uZFB3PVZ6WGpTRSZZdHZSVzI3";
     Pdf4meClient pdf4meClient;
+    ConvertClient convertClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,32 +43,68 @@ public class grid extends AppCompatActivity {
 
 
         pdf4meClient = new Pdf4meClient("https://api.pdf4me.com", token);
+        convertClient = new ConvertClient(pdf4meClient);
         gridView = findViewById(R.id.grid_view);
         updateGridView();
 
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(getApplicationContext(), "You Clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
+        gridView.setOnItemClickListener((adapterView, view, i, l) -> Toast.makeText(getApplicationContext(), "You Clicked", Toast.LENGTH_SHORT).show());
 
-        findViewById(R.id.add_more_btn).setOnClickListener(V -> {
-            finish();
-        });
+        findViewById(R.id.add_more_btn).setOnClickListener(V -> finish());
 
-        findViewById(R.id.convert_btn).setOnClickListener(view -> {
-            createPDF();
-        });
+        findViewById(R.id.convert_btn).setOnClickListener(view -> createPDF());
     }
 
     private void createPDF() {
-        //todo save images to pdf
-        ConvertClient convertClient = new ConvertClient(pdf4meClient);
+        List<Uri> list = new ArrayList<>(MainActivity.clickedImages);
+        List<File> files = new ArrayList<>();
+        List<File> pdfs = new ArrayList<>();
+        for (Uri uri : list) {
+            File temp = new File(uri.getPath());
+            files.add(temp);
+        }
 
-        ConvertToPdf convertToPdf = new ConvertToPdf();
-
-
+        File mergedPdf = new File(getExternalFilesDir(null),"mergedPdf_" + System.currentTimeMillis() + ".pdf");
+        for(int i = 0; i < files.size(); i++) {
+            // conversion and writing the generated PDF to disk
+            File file = files.get(i);
+            byte[] generatedPdf = convertClient.convertFileToPdf("file" + i, file);
+            try {
+                if(files.size() == 1)
+                    FileUtils.writeByteArrayToFile(mergedPdf, generatedPdf);
+                else {
+                    File converted = new File(getExternalFilesDir(null),"output/generatedPdf"+ i + ".pdf");
+                    FileUtils.writeByteArrayToFile(converted, generatedPdf);
+                    pdfs.add(converted);
+                    Log.e(TAG, "createPDF: Single file converted");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(pdfs.size() == files.size() && pdfs.size() > 1) {
+            try {
+                MergeClient mergeClient = new MergeClient(pdf4meClient);
+                byte[] mergedByteArray;
+                for(int i = 0; i < pdfs.size(); i++) {
+                    if(i == 0) {
+                        //for first and second file
+                        mergedByteArray = mergeClient.merge2Pdfs(pdfs.get(i), pdfs.get(i + 1));
+                        FileUtils.writeByteArrayToFile(mergedPdf, mergedByteArray);
+                        pdfs.get(i).delete();
+                        pdfs.get(i + 1).delete();
+                        i++;
+                    } else {
+                        //for third onwards
+                        mergedByteArray = mergeClient.merge2Pdfs(mergedPdf, pdfs.get(i));
+                        FileUtils.writeByteArrayToFile(mergedPdf, mergedByteArray);
+                        pdfs.get(i).delete();
+                    }
+                }
+                Log.e(TAG, "createPDF: all files merged");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public class MainAdapter extends BaseAdapter {
