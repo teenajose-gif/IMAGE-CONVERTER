@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,7 +22,15 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Image;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -34,6 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class grid extends AppCompatActivity {
+    private static final String TAG = "grid";
     GridView gridView;
 
 
@@ -53,44 +61,23 @@ public class grid extends AppCompatActivity {
     }
 
     private void createPDF() {
-        final File file = new File(grid.this.getExternalFilesDir(null),
-                "PDF4ME_Scan_" +
-                        new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()) +
-                        ".pdf");
-        final List<Uri> list = new ArrayList<>(MainActivity.clickedImages);
-        final ProgressDialog dialog = ProgressDialog.show(grid.this, "", "Generating PDF...");
-        dialog.show();
-        new Thread(() -> {
-            Bitmap bitmap;
-            PdfDocument document = new PdfDocument();
-            try {
-                for (int i = 0; i < list.size(); i++) {
-                    bitmap = MediaStore.Images.Media.getBitmap(grid.this.getContentResolver(), list.get(i));
-                    PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), (i + 1)).create();
-                    PdfDocument.Page page = document.startPage(pageInfo);
-                    Canvas canvas = page.getCanvas();
-                    Paint paint = new Paint();
-                    paint.setColor(Color.BLUE);
-                    canvas.drawPaint(paint);
-                    canvas.drawBitmap(bitmap, 0f, 0f, null);
-                    document.finishPage(page);
-                    bitmap.recycle();
-                }
-
-                FileOutputStream fos;
-                try {
-                    fos = new FileOutputStream(file);
-                    document.writeTo(fos);
-                    document.close();
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                runOnUiThread(dialog::dismiss);
-            } catch (IOException e) {
-                e.printStackTrace();
+        List<Uri> list = new ArrayList<>(MainActivity.clickedImages);
+        try {
+            File mergedPdf = new File(getExternalFilesDir(null), "PDF4ME_"+ System.currentTimeMillis() +".pdf");
+            mergedPdf.createNewFile();
+            PdfWriter writer = new PdfWriter(mergedPdf.getAbsolutePath());
+            PdfDocument pdfDocument = new PdfDocument(writer);
+            Document document = new Document(pdfDocument);
+            for (int i = 0; i < list.size(); i++) {
+                ImageData data = ImageDataFactory.create(list.get(i).getPath());
+                Image img = new Image(data);
+                document.add(img);
             }
-        }).start();
+            document.close();
+            Log.e(TAG, "createPDF: " + mergedPdf.getName() + " created");
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     /**
