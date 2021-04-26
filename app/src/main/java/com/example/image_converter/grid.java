@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -75,7 +76,7 @@ public class grid extends AppCompatActivity {
             }
             document.close();
             Log.e(TAG, "createPDF: " + mergedPdf.getName() + " created");
-        } catch (IOException e){
+        } catch (IOException | NullPointerException e){
             e.printStackTrace();
         }
     }
