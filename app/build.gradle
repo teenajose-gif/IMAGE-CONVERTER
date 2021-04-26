@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.image_converter"
-        minSdkVersion 23
+        minSdkVersion 26
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -39,4 +39,5 @@ dependencies {
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
     implementation 'com.itextpdf:kernel:7.0.2'
     implementation 'com.itextpdf:layout:7.0.2'
+    implementation 'com.squareup.okhttp3:okhttp:4.1.0'
 }
