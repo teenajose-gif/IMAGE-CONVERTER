@@ -1,43 +1,26 @@
 package com.example.image_converter;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.telecom.Call;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Image;
+import androidx.appcompat.app.AppCompatActivity;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,10 +30,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -110,7 +91,7 @@ public class grid extends AppCompatActivity {
                     JSONObject wrapper = new JSONObject();
                     JSONObject document = new JSONObject();
                     document.put("name", selectedFile.getName());
-                    document.put("docData", "encodedString");
+                    document.put("docData", encodedString);
 
                     JSONObject action = new JSONObject();
                     action.put("pdfConformance", "pdfA1");
@@ -182,7 +163,7 @@ public class grid extends AppCompatActivity {
                         JSONObject doc = new JSONObject(docStr);
                         String receivedBase64 = doc.getString("docData");
                         byte[] bytes = Base64.getDecoder().decode(receivedBase64);
-                        File mergedPdf = new File(getExternalFilesDir(null), "PDF4ME_" +
+                        File mergedPdf = new File(getExternalFilesDir(null), "Pdf/PDF4ME_" +
                                 new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()) +
                                 ".pdf");
                         FileOutputStream fos = new FileOutputStream(mergedPdf);
@@ -194,7 +175,7 @@ public class grid extends AppCompatActivity {
                     //operation complete
                     grid.this.runOnUiThread(() -> convert.setText("Converted"));
                     MainActivity.clickedImages.clear();
-                    updateGridView();
+                    startActivity();
                 }
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
@@ -258,5 +239,11 @@ public class grid extends AppCompatActivity {
     private void updateGridView() {
         MainAdapter adapter = new MainAdapter(getApplicationContext(), MainActivity.clickedImages);
         gridView.setAdapter(adapter);
+    }
+
+    private void startActivity() {
+        startActivity(new Intent(getApplicationContext(), MyScans.class));
+        overridePendingTransition(0,0);
+        finish();
     }
 }
