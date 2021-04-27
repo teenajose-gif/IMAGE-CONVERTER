@@ -182,7 +182,9 @@ public class grid extends AppCompatActivity {
                         JSONObject doc = new JSONObject(docStr);
                         String receivedBase64 = doc.getString("docData");
                         byte[] bytes = Base64.getDecoder().decode(receivedBase64);
-                        File mergedPdf = new File(getExternalFilesDir(null), "PDF4ME_SCAN.pdf");
+                        File mergedPdf = new File(getExternalFilesDir(null), "PDF4ME_" +
+                                new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()) +
+                                ".pdf");
                         FileOutputStream fos = new FileOutputStream(mergedPdf);
                         fos.write(bytes);
                         Log.e(TAG, "convert: responseData : \n" + responseData);
