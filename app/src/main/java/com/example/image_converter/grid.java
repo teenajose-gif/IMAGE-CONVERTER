@@ -108,9 +108,6 @@ public class grid extends AppCompatActivity {
                     wrapper.put("document", document);
                     wrapper.put("convertToPdfAction", action);
 
-
-                    Log.e(TAG, "convert: " + wrapper.toString());
-
                     RequestBody requestBody = RequestBody.create(JSON, String.valueOf(wrapper));
                     Request request = new Request.Builder()
                             .addHeader("Authorization", token)
@@ -183,7 +180,6 @@ public class grid extends AppCompatActivity {
                                 ".pdf");
                         FileOutputStream fos = new FileOutputStream(mergedPdf);
                         fos.write(bytes);
-                        Log.e(TAG, "convert: responseData : \n" + responseData);
                     } else {
                         Log.e(TAG, "convert: response isSuccessful false");
                         grid.this.runOnUiThread(() -> {
