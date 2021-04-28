@@ -51,8 +51,8 @@
 
             <ImageButton
                 android:id="@+id/bt_browse"
-                android:layout_width="80dp"
-                android:layout_height="60dp"
+                android:layout_width="90dp"
+                android:layout_height="70dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:background="@color/white"
@@ -71,13 +71,13 @@
             android:padding="10dp">
 
             <ImageButton
-                android:id="@+id/bt_reset"
+                android:id="@+id/bt_my_scans"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:background="@color/white"
-                android:src="@drawable/refresh_vector"
+                android:src="@drawable/ic_baseline_picture_as_pdf_24"
                 app:tint="@color/black" />
 
         </RelativeLayout>

@@ -56,7 +56,15 @@ public class grid extends AppCompatActivity {
         findViewById(R.id.add_more_btn).setOnClickListener(V -> finish());
 
         convert = findViewById(R.id.convert_btn);
-        convert.setOnClickListener(v -> convert());
+        convert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!convert.getText().toString().equals("Converting..."))
+                    convert();
+                else
+                    Toast.makeText(grid.this, "Conversion in progress...", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public static final MediaType JSON
@@ -70,9 +78,9 @@ public class grid extends AppCompatActivity {
         }
         final List<String> PDFs = new ArrayList<>();
         convert.setText("Converting...");
-        final String convertToPdfUrl = "https://api-dev.pdf4me.com/Convert/ConvertToPdf";
-        final String mergePdfUrl = "https://api-dev.pdf4me.com/Merge/Merge";
-        final String token = "Basic OTQxYjU0ZDEtYWIxYy00MmVhLWFiYzUtMWE0YTE3NmUwOTM4OiFVeCVMOXVsd0xuclRsTFNPTFZLWkhFcEFmNjNieU89";
+        final String convertToPdfUrl = "https://api.pdf4me.com/Convert/ConvertToPdf";
+        final String mergePdfUrl = "https://api.pdf4me.com/Merge/Merge";
+        final String token = "Basic NTBiNDA1YjQtZDUwOS00MTI1LWJhYjMtMGZjMTM2MTcyMWRjOkNscWdTT1dudmRJUGw0eDhaWFlrJnpnUHNEMEVheWNn";
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .writeTimeout(1, TimeUnit.MINUTES)
@@ -123,6 +131,10 @@ public class grid extends AppCompatActivity {
                         Log.e(TAG, "convert: file created to single pdf");
                     } else {
                         Log.e(TAG, "convert: converting failed unsuccessful response for " + selectedFile.getName());
+                        grid.this.runOnUiThread(() -> {
+                            convert.setText("Convert");
+                            Toast.makeText(this, "Error in converting pdf", Toast.LENGTH_SHORT).show();
+                        });
                         break;
                     }
                 }
@@ -163,7 +175,10 @@ public class grid extends AppCompatActivity {
                         JSONObject doc = new JSONObject(docStr);
                         String receivedBase64 = doc.getString("docData");
                         byte[] bytes = Base64.getDecoder().decode(receivedBase64);
-                        File mergedPdf = new File(getExternalFilesDir(null), "Pdf/PDF4ME_" +
+                        File folder = new File(getExternalFilesDir(null), "Pdf");
+                        if(!folder.isDirectory()) //if folder does not exist
+                            folder.mkdir(); //make directory
+                        File mergedPdf = new File(folder, "PDF4ME_" +
                                 new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()) +
                                 ".pdf");
                         FileOutputStream fos = new FileOutputStream(mergedPdf);
@@ -171,9 +186,16 @@ public class grid extends AppCompatActivity {
                         Log.e(TAG, "convert: responseData : \n" + responseData);
                     } else {
                         Log.e(TAG, "convert: response isSuccessful false");
+                        grid.this.runOnUiThread(() -> {
+                            convert.setText("Convert");
+                            Toast.makeText(this, "Error in converting pdf", Toast.LENGTH_SHORT).show();
+                        });
                     }
                     //operation complete
-                    grid.this.runOnUiThread(() -> convert.setText("Converted"));
+                    grid.this.runOnUiThread(() -> {
+                        convert.setText("Convert");
+                        Toast.makeText(this, "File converted", Toast.LENGTH_SHORT).show();
+                    });
                     MainActivity.clickedImages.clear();
                     startActivity();
                 }

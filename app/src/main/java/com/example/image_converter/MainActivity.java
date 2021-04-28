@@ -3,18 +3,14 @@ package com.example.image_converter;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageActivity;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.ArrayList;
@@ -32,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btBrowse = findViewById(R.id.bt_browse);
-        btReset = findViewById(R.id.bt_reset);
+        btReset = findViewById(R.id.bt_my_scans);
         imageView = findViewById(R.id.image_view);
 
         btBrowse.setOnClickListener(new View.OnClickListener() {
@@ -48,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
         btReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageView.setImageBitmap(null);
+                startActivity(new Intent(getApplicationContext(), MyScans.class));
+                overridePendingTransition(0,0);
             }
         });
     }

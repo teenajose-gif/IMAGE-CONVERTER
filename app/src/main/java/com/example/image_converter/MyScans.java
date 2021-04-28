@@ -2,10 +2,14 @@ package com.example.image_converter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -125,18 +129,36 @@ public class MyScans extends AppCompatActivity {
     }
 
     private void viewFile(File file) {
-        //todo view file in another app
-        Toast.makeText(this, "view file clicked", Toast.LENGTH_SHORT).show();
+        Uri path = FileProvider.getUriForFile(getApplicationContext(),
+                BuildConfig.APPLICATION_ID + ".provider",
+                file);
+        Intent pdfOpenIntent = new Intent(Intent.ACTION_VIEW);
+        pdfOpenIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        pdfOpenIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        pdfOpenIntent.setDataAndType(path, "application/pdf");
+        try {
+            startActivity(pdfOpenIntent);
+        }
+        catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Cannot open selected file", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void deleteFile(File file) {
-        //todo delete file
-        updateRecyclerView();
-        Toast.makeText(this, "delete file clicked", Toast.LENGTH_SHORT).show();
+        if(file.exists()) {
+            if(file.delete())
+                updateRecyclerView();
+        }
     }
 
     public void shareFile(File file) {
-        //todo share file
-        Toast.makeText(this, "share file clicked", Toast.LENGTH_SHORT).show();
+        Uri path = FileProvider.getUriForFile(getApplicationContext(),
+                BuildConfig.APPLICATION_ID + ".provider",
+                file);
+        Intent pdfOpenIntent = new Intent(Intent.ACTION_SEND);
+        pdfOpenIntent.putExtra(Intent.EXTRA_STREAM, path);
+        pdfOpenIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        pdfOpenIntent.setType("application/pdf");
+        startActivity(Intent.createChooser(pdfOpenIntent, "Share via.."));
     }
 }
