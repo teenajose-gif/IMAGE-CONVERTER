@@ -1,13 +1,25 @@
 package com.example.image_converter;
 
+import java.io.File;
+
 public class FileModal {
     String path, name, size, dateCreated;
+    File file;
 
-    public FileModal(String path, String name, String size, String dateCreated) {
+    public FileModal(File file, String path, String name, String size, String dateCreated) {
+        this.file = file;
         this.path = path;
         this.name = name;
         this.size = size;
         this.dateCreated = dateCreated;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 
     public String getPath() {

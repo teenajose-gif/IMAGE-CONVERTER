@@ -10,7 +10,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,6 +28,12 @@ public class MyScans extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_scans);
 
+        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        updateRecyclerView();
+    }
+
+    private void updateRecyclerView() {
         File folder = new File(getExternalFilesDir(null), "Pdf");
         File[] listOfFiles = folder.listFiles();
         if (listOfFiles == null) {
@@ -33,11 +42,9 @@ public class MyScans extends AppCompatActivity {
         List<FileModal> list = new ArrayList<>();
         for (File file : listOfFiles) {
             if (file.isFile()) {
-                list.add(new FileModal(file.getAbsolutePath(), file.getName(), getSize(file), ""));
+                list.add(new FileModal(file, file.getAbsolutePath(), file.getName(), getSize(file), ""));
             }
         }
-        recyclerView = findViewById(R.id.recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerAdapter(this, list);
         recyclerView.setAdapter(adapter);
     }
@@ -72,9 +79,27 @@ public class MyScans extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            FileModal temp = data.get(position);
-            holder.textView.setText(temp.getName());
-            //holder.textView.setOnClickListener(view -> Toast.makeText(context, "CLicked on" + temp.getName(), Toast.LENGTH_SHORT).show());
+            final FileModal temp = data.get(position);
+            holder.pdfName.setText(temp.getName());
+            holder.pdfSize.setText(temp.getSize());
+            holder.pdfDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    deleteFile(temp.getFile());
+                }
+            });
+            holder.pdfShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    shareFile(temp.getFile());
+                }
+            });
+            holder.item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    viewFile(temp.getFile());
+                }
+            });
         }
 
         @Override
@@ -83,13 +108,35 @@ public class MyScans extends AppCompatActivity {
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            TextView textView;
+            TextView pdfName, pdfSize;
+            Button pdfShare, pdfDelete;
+            LinearLayout item;
 
             public ViewHolder(@NonNull View itemView) {
 
                 super(itemView);
-                textView = itemView.findViewById(R.id.fileName);
+                item = itemView.findViewById(R.id.item);
+                pdfName = itemView.findViewById(R.id.pdf_name);
+                pdfSize = itemView.findViewById(R.id.pdf_size);
+                pdfShare = itemView.findViewById(R.id.pdf_share);
+                pdfDelete = itemView.findViewById(R.id.pdf_delete);
             }
         }
+    }
+
+    private void viewFile(File file) {
+        //todo view file in another app
+        Toast.makeText(this, "view file clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    public void deleteFile(File file) {
+        //todo delete file
+        updateRecyclerView();
+        Toast.makeText(this, "delete file clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    public void shareFile(File file) {
+        //todo share file
+        Toast.makeText(this, "share file clicked", Toast.LENGTH_SHORT).show();
     }
 }

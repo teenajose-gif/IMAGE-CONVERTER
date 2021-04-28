@@ -72,7 +72,7 @@ public class grid extends AppCompatActivity {
         convert.setText("Converting...");
         final String convertToPdfUrl = "https://api-dev.pdf4me.com/Convert/ConvertToPdf";
         final String mergePdfUrl = "https://api-dev.pdf4me.com/Merge/Merge";
-        final String token = "Basic NWM3OTAxNDEtODE2OC00OGM0LWIyMjMtNTQ2OWM5YTlkYjliOlFLZkQxOTQmSzExJW9uZFB3PVZ6WGpTRSZZdHZSVzI3";
+        final String token = "Basic OTQxYjU0ZDEtYWIxYy00MmVhLWFiYzUtMWE0YTE3NmUwOTM4OiFVeCVMOXVsd0xuclRsTFNPTFZLWkhFcEFmNjNieU89";
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .writeTimeout(1, TimeUnit.MINUTES)
