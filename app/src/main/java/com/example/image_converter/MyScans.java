@@ -237,6 +237,14 @@ public class MyScans extends AppCompatActivity {
                             MyScans.this.runOnUiThread(dialog::dismiss);
                         } else {
                             Log.e(TAG, "onClick: unsuccessful response");
+                            MyScans.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dialog.dismiss();
+                                    confirm.setText("Confirm");
+                                    Toast.makeText(MyScans.this, "Cannot add password to selected file", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
