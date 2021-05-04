@@ -42,6 +42,7 @@ public class grid extends AppCompatActivity {
     private static final String TAG = "grid";
     GridView gridView;
     Button convert;
+    public final static String token = "Basic NTBiNDA1YjQtZDUwOS00MTI1LWJhYjMtMGZjMTM2MTcyMWRjOkNscWdTT1dudmRJUGw0eDhaWFlrJnpnUHNEMEVheWNn";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +81,6 @@ public class grid extends AppCompatActivity {
         convert.setText("Converting...");
         final String convertToPdfUrl = "https://api.pdf4me.com/Convert/ConvertToPdf";
         final String mergePdfUrl = "https://api.pdf4me.com/Merge/Merge";
-        final String token = "Basic NTBiNDA1YjQtZDUwOS00MTI1LWJhYjMtMGZjMTM2MTcyMWRjOkNscWdTT1dudmRJUGw0eDhaWFlrJnpnUHNEMEVheWNn";
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .writeTimeout(1, TimeUnit.MINUTES)
