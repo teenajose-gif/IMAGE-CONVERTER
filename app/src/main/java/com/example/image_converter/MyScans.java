@@ -160,12 +160,78 @@ public class MyScans extends AppCompatActivity {
                     return true;
                 case R.id.AddStamp:
                     addStamp(temp.getFile());
+                case R.id.Compress:
+                    compressFile(temp.getFile());
                     return true;
                 default:
                     return false;
             }
         });
         popupMenu.show();
+    }
+
+    private void compressFile(File file) {
+        String url = "https://api.pdf4me.com/Optimize/Optimize";
+        final OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .writeTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.MINUTES)
+                .build();
+        try {
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            String encodedString = Base64.getEncoder().encodeToString(bytes);
+
+            JSONObject wrapper = new JSONObject();
+
+            JSONObject document = new JSONObject();
+            document.put("fileName", "tempFile.pdf");
+            document.put("docData", encodedString);
+
+            JSONObject optimizeAction = new JSONObject();
+            optimizeAction.put("profile", "max");
+            optimizeAction.put("useProfile", true);
+
+            wrapper.put("document", document);
+            wrapper.put("optimizeAction", optimizeAction);
+
+            RequestBody requestBody = RequestBody.create(grid.JSON, String.valueOf(wrapper));
+            Request request = new Request.Builder()
+                    .addHeader("Authorization", grid.token)
+                    .method("POST", requestBody)
+                    .url(url)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+            Log.e(TAG, "onClick: compressing file");
+            Toast.makeText(this, "compressing file", Toast.LENGTH_SHORT).show();
+            new Thread(() -> {
+                try {
+                    Response response = client.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        String responseData = response.body().string();
+                        JSONObject jsonObject = new JSONObject(responseData);
+                        String docStr = jsonObject.getString("document");
+                        JSONObject doc = new JSONObject(docStr);
+                        String receivedBase64 = doc.getString("docData");
+                        byte[] bytesArr = Base64.getDecoder().decode(receivedBase64);
+                        FileOutputStream fileOutputStream = new FileOutputStream(file);
+                        fileOutputStream.write(bytesArr);
+                        Log.e(TAG, "onClick: pdf is compressed");
+                        MyScans.this.runOnUiThread(() -> {
+                            Toast.makeText(MyScans.this, "file compressed", Toast.LENGTH_SHORT).show();
+                            updateRecyclerView();
+                        });
+                    } else {
+                        Log.e(TAG, "onClick: unsuccessful response");
+                        MyScans.this.runOnUiThread(() -> Toast.makeText(MyScans.this, "Cannot compress selected file", Toast.LENGTH_SHORT).show());
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void addStamp(File file) {
@@ -377,7 +443,7 @@ public class MyScans extends AppCompatActivity {
         }
     }
 
-    public void shareFile(File file)    {
+    public void shareFile(File file) {
         Uri path = FileProvider.getUriForFile(getApplicationContext(),
                 BuildConfig.APPLICATION_ID + ".provider",
                 file);

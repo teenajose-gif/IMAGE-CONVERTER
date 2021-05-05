@@ -7,6 +7,9 @@
         android:id="@+id/AddStamp"
         android:title="Add Stamp" />
     <item
+        android:id="@+id/Compress"
+        android:title="Compress" />
+    <item
         android:id="@+id/Share"
         android:title="Share" />
     <item
