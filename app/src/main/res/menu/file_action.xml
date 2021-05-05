@@ -4,6 +4,9 @@
         android:id="@+id/Protect"
         android:title="Protect" />
     <item
+        android:id="@+id/AddStamp"
+        android:title="Add Stamp" />
+    <item
         android:id="@+id/Share"
         android:title="Share" />
     <item

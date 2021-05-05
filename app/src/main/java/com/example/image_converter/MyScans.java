@@ -158,6 +158,9 @@ public class MyScans extends AppCompatActivity {
                 case R.id.Delete:
                     deleteFile(temp.getFile());
                     return true;
+                case R.id.AddStamp:
+                    addStamp(temp.getFile());
+                    return true;
                 default:
                     return false;
             }
@@ -165,8 +168,102 @@ public class MyScans extends AppCompatActivity {
         popupMenu.show();
     }
 
+    private void addStamp(File file) {
+        final String url = "https://api.pdf4me.com/Stamp/Stamp";
+        final OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .writeTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.MINUTES)
+                .build();
+        Dialog dialog = new Dialog(MyScans.this);
+        dialog.setContentView(R.layout.dialog_stamp);
+        dialog.setCanceledOnTouchOutside(false);
+        EditText passwordEt = dialog.findViewById(R.id.value_et);
+        Button confirm = dialog.findViewById(R.id.confirm_button);
+        ImageView cancel = dialog.findViewById(R.id.cancel);
+        dialog.show();
+        cancel.setOnClickListener(v -> {
+            if (!confirm.getText().toString().contains("..."))
+                dialog.dismiss();
+        });
+        confirm.setOnClickListener(v -> {
+            String value = passwordEt.getText().toString().trim();
+            if (value.length() == 0) {
+                Toast.makeText(MyScans.this, "Empty text", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            confirm.setText("Adding...");
+            try {
+                byte[] bytes = Files.readAllBytes(file.toPath());
+                String encodedString = Base64.getEncoder().encodeToString(bytes);
+
+                JSONObject wrapper = new JSONObject();
+
+                JSONObject document = new JSONObject();
+                document.put("fileName", "tempFile.pdf");
+                document.put("docData", encodedString);
+
+                JSONObject stampAction = new JSONObject();
+                stampAction.put("pageSequence", "all");
+
+                JSONObject text = new JSONObject();
+                text.put("size", 20);
+                text.put("value", value);
+
+                stampAction.put("text", text);
+                stampAction.put("alignX", "right");
+                stampAction.put("alignY", "bottom");
+                stampAction.put("alpha", 0.75);
+
+                wrapper.put("document", document);
+                wrapper.put("stampAction", stampAction);
+
+                RequestBody requestBody = RequestBody.create(grid.JSON, String.valueOf(wrapper));
+                Request request = new Request.Builder()
+                        .addHeader("Authorization", grid.token)
+                        .method("POST", requestBody)
+                        .url(url)
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+                Log.e(TAG, "onClick: adding password to pdf");
+
+                new Thread(() -> {
+                    try {
+                        Response response = client.newCall(request).execute();
+                        if (response.isSuccessful()) {
+                            String responseData = response.body().string();
+                            JSONObject jsonObject = new JSONObject(responseData);
+                            String docStr = jsonObject.getString("document");
+                            JSONObject doc = new JSONObject(docStr);
+                            String receivedBase64 = doc.getString("docData");
+                            byte[] bytesArr = Base64.getDecoder().decode(receivedBase64);
+                            FileOutputStream fileOutputStream = new FileOutputStream(file);
+                            fileOutputStream.write(bytesArr);
+                            Log.e(TAG, "onClick: pdf is password protected");
+                            MyScans.this.runOnUiThread(dialog::dismiss);
+                        } else {
+                            Log.e(TAG, "onClick: unsuccessful response");
+                            MyScans.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dialog.dismiss();
+                                    confirm.setText("Confirm");
+                                    Toast.makeText(MyScans.this, "Cannot add stamp to selected file", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
     private void protectFile(final File file) {
-        //todo protect
         final String url = "https://api.pdf4me.com/PdfA/Protect";
         final OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.MINUTES)
@@ -176,7 +273,7 @@ public class MyScans extends AppCompatActivity {
         Dialog dialog = new Dialog(MyScans.this);
         dialog.setContentView(R.layout.dialog_password);
         dialog.setCanceledOnTouchOutside(false);
-        EditText passwordEt = dialog.findViewById(R.id.password_et);
+        EditText passwordEt = dialog.findViewById(R.id.value_et);
         Button confirm = dialog.findViewById(R.id.confirm_button);
         ImageView cancel = dialog.findViewById(R.id.cancel);
         dialog.show();
@@ -280,7 +377,7 @@ public class MyScans extends AppCompatActivity {
         }
     }
 
-    public void shareFile(File file) {
+    public void shareFile(File file)    {
         Uri path = FileProvider.getUriForFile(getApplicationContext(),
                 BuildConfig.APPLICATION_ID + ".provider",
                 file);

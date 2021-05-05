@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginBottom="10dp"
-            android:text="Enter password"
+            android:text="Add Stamp Text"
             android:textColor="@color/black"
             android:textSize="16sp" />
 
@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/browse_btn_bg"
-            android:hint="************"
+            android:hint="value"
             android:paddingLeft="20dp"
             android:paddingTop="15dp"
             android:paddingRight="20dp"
