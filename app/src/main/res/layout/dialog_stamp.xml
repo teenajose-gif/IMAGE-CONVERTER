@@ -41,6 +41,11 @@
             android:paddingBottom="15dp"
             android:textSize="16sp" />
 
+<!--        todo add dropdown for x and y axis values-->
+<!--        todo first dropdown for x axis values i.e. left center right -->
+<!--        todo second dropdown for y axis values i.e. top middle bottom -->
+<!--        todo third dropdown for alpha values i.e. 0.2 0.25 0.5 0.75 1 -->
+
         <Button
             android:id="@+id/confirm_button"
             android:layout_width="wrap_content"
