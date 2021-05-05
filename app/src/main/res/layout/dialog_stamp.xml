@@ -42,8 +42,43 @@
             android:textSize="16sp" />
 
 <!--        todo add dropdown for x and y axis values-->
+
 <!--        todo first dropdown for x axis values i.e. left center right -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="Stamp horizontal location"
+            android:layout_marginTop="15dp"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <Spinner
+            android:id="@+id/horizontal_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/browse_btn_bg"
+            android:textAlignment="center"/>
+
 <!--        todo second dropdown for y axis values i.e. top middle bottom -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="Stamp vertical location"
+            android:layout_marginTop="15dp"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <Spinner
+            android:id="@+id/vertical_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/browse_btn_bg"
+            android:textAlignment="center"/>
+
 <!--        todo third dropdown for alpha values i.e. 0.2 0.25 0.5 0.75 1 -->
 
         <Button

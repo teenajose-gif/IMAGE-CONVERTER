@@ -11,11 +11,13 @@ import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -160,6 +162,7 @@ public class MyScans extends AppCompatActivity {
                     return true;
                 case R.id.AddStamp:
                     addStamp(temp.getFile());
+                    return true;
                 case R.id.Compress:
                     compressFile(temp.getFile());
                     return true;
@@ -244,7 +247,15 @@ public class MyScans extends AppCompatActivity {
         Dialog dialog = new Dialog(MyScans.this);
         dialog.setContentView(R.layout.dialog_stamp);
         dialog.setCanceledOnTouchOutside(false);
-        EditText passwordEt = dialog.findViewById(R.id.value_et);
+        EditText valueEt = dialog.findViewById(R.id.value_et);
+
+        //spinners
+        Spinner xSpinner = dialog.findViewById(R.id.horizontal_spinner);
+        Spinner ySpinner = dialog.findViewById(R.id.vertical_spinner);
+        ArrayAdapter xAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner_item, new String[]{"left", "center", "right"});
+        ArrayAdapter yAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner_item, new String[]{"top", "middle", "bottom"});
+        xSpinner.setAdapter(xAdapter);
+        ySpinner.setAdapter(yAdapter);
         Button confirm = dialog.findViewById(R.id.confirm_button);
         ImageView cancel = dialog.findViewById(R.id.cancel);
         dialog.show();
@@ -253,7 +264,7 @@ public class MyScans extends AppCompatActivity {
                 dialog.dismiss();
         });
         confirm.setOnClickListener(v -> {
-            String value = passwordEt.getText().toString().trim();
+            String value = valueEt.getText().toString().trim();
             if (value.length() == 0) {
                 Toast.makeText(MyScans.this, "Empty text", Toast.LENGTH_SHORT).show();
                 return;
@@ -277,8 +288,8 @@ public class MyScans extends AppCompatActivity {
                 text.put("value", value);
 
                 stampAction.put("text", text);
-                stampAction.put("alignX", "right");
-                stampAction.put("alignY", "bottom");
+                stampAction.put("alignX", xSpinner.getSelectedItem().toString());
+                stampAction.put("alignY", ySpinner.getSelectedItem().toString());
                 stampAction.put("alpha", 0.75);
 
                 wrapper.put("document", document);
