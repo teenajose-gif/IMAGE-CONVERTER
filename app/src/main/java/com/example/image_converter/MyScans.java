@@ -49,19 +49,20 @@ public class MyScans extends AppCompatActivity {
     private static final String TAG = "MyScans";
     RecyclerView recyclerView;
     RecyclerAdapter adapter;
+    File folder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_scans);
 
+        folder = new File(getExternalFilesDir(null), "Pdf");
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         updateRecyclerView();
     }
 
     private void updateRecyclerView() {
-        File folder = new File(getExternalFilesDir(null), "Pdf");
         File[] listOfFiles = folder.listFiles();
         if (listOfFiles == null) {
             listOfFiles = new File[0];
@@ -151,6 +152,9 @@ public class MyScans extends AppCompatActivity {
         menuInflater.inflate(R.menu.file_action, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
+                case R.id.Rename:
+                    renameFile(temp.getFile());
+                    return true;
                 case R.id.Protect:
                     protectFile(temp.getFile());
                     return true;
@@ -171,6 +175,32 @@ public class MyScans extends AppCompatActivity {
             }
         });
         popupMenu.show();
+    }
+
+    private void renameFile(File file) {
+        Dialog dialog = new Dialog(MyScans.this);
+        dialog.setContentView(R.layout.dialog_filename);
+        EditText valueEt = dialog.findViewById(R.id.value_et);
+        Button confirmBtn = dialog.findViewById(R.id.confirm_button);
+        valueEt.setText(file.getName());
+        confirmBtn.setOnClickListener(v -> {
+            String value = valueEt.getText().toString().trim();
+            while (value.contains(".pdf"))
+                value.replace(".pdf", "");
+            value += ".pdf";
+            File newFile = new File(folder, value);
+            if (newFile.exists())
+                Toast.makeText(MyScans.this, "file already exists", Toast.LENGTH_SHORT).show();
+            else {
+                if (file.renameTo(newFile)) {
+                    dialog.dismiss();
+                    updateRecyclerView();
+                }
+                else
+                    Toast.makeText(MyScans.this, "file cannot be renamed", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.show();
     }
 
     private void compressFile(File file) {
