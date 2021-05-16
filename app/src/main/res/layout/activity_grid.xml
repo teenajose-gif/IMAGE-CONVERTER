@@ -60,10 +60,11 @@
             android:paddingStart="45dp"
             android:paddingEnd="45dp"
             android:layout_marginEnd="15dp"
+            android:textColor="@color/white"
             app:backgroundTint="@null"
             android:layout_alignParentEnd="true"
             android:background="@drawable/btn_bg"
-            android:text="Convert to pdf"/>
+            android:text="Convert"/>
     </RelativeLayout>
 
 </RelativeLayout>

@@ -240,7 +240,7 @@ public class grid extends AppCompatActivity {
             }
 
             ImageView imageView = view.findViewById(R.id.image_view);
-            ImageView deleteBtn = view.findViewById(R.id.delete_btn);
+            Button deleteBtn = view.findViewById(R.id.delete_btn);
             Uri currUri = list.get(position);
             imageView.setImageURI(currUri);
             deleteBtn.setOnClickListener(new View.OnClickListener() {
