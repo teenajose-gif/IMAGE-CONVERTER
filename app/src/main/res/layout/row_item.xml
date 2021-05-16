@@ -2,7 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="20dp"
@@ -12,19 +12,22 @@
         android:id="@+id/image_view"
         android:layout_width="150dp"
         android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
         android:src="@color/white"/>
 
-    <ImageView
+
+    <Button
         android:id="@+id/delete_btn"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_toRightOf="@id/image_view"
-        app:tint="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/image_view"
+        android:background="@drawable/btn_bg"
         android:padding="5dp"
-        android:background="@drawable/delete_vector_bg"
-        android:layout_marginLeft="-17.5dp"
-        android:layout_marginTop="-17.5dp"
-        android:layout_below="@id/image_view"
-        android:src="@drawable/delete_vector"/>
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:text="DELETE"
+        android:textColor="@color/white"
+        app:backgroundTint="@null"/>
+
 
 </RelativeLayout>
